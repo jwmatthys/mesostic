@@ -11,10 +11,11 @@ python mesostic.py
 
 Requires Tkinter and nltk
 
-on Ubuntu, use:
+on Ubuntu:
 sudo apt-get install python-tk python-nltk
 
-on OSX, do something different.
+on OSX:
+install nltk using the instructions here: http://nltk.org/install.html
 
 #LICENSE
 
