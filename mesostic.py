@@ -57,6 +57,11 @@ def go_mesostic():
         tex.insert(END,'\n')
 
         for word in tokens:
+            if spine[spine_index] in word:
+                if found:
+                    foundNext = True
+                found = True
+
             wing = wing + word + ' '
             winglen += 1
 
@@ -70,19 +75,15 @@ def go_mesostic():
                         tex.insert(END,textline)
                         spine_index += 1
 
-                    wing = ''
-                    winglen = 0
-                    found = False
-                    foundNext = False
-                    if spine_index >= len(spine):
-                        output.write('\n')
-                        tex.insert(END,'\n')
-                        spine_index = 0
+                wing = ''
+                winglen = 0
+                found = False
+                foundNext = False
+                if spine_index >= len(spine):
+                    output.write('\n')
+                    tex.insert(END,'\n')
+                    spine_index = 0
 
-                if spine[spine_index] in wing:
-                    if found:
-                        foundNext = True
-                    found = True
 
         for i in range(int(float(tex.index(END)))):
             tex.tag_add(tex.index(END),i+max_indent/100.0)
