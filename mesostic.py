@@ -4,21 +4,29 @@
 
 from re import split
 from Tkinter import *
-import tkFileDialog as openpanel
+import tkFileDialog
+import nltk
+from urllib import urlopen
 
 def load_text():
-    root.infile = openpanel.askopenfilename()
+    root.infile = tkFileDialog.askopenfilename()
     print 'infile: '+root.infile
 
 def go_mesostic():
     tex.delete(1.0,END)
-    if root.infile == None:
+    if root.infile == None and url_input.get() == '':
         tex.insert(END,'--- no input text selected ---')
     elif spine_in.get() == '':
         tex.insert(END,'--- no spine chosen ---')
     else:
-        f = open(root.infile, 'r')
-        s = f.read()
+        if root.infile == None:
+            url = url_input.get()
+            html = urlopen(url).read()
+            s = nltk.clean_html(html)
+            root.infile = url_input.get()
+        else:
+            s = open(root.infile, 'r').read()
+        root.title(root.infile)
         s = s.lower()
         s = s.replace('\n',' ')
         s = s.replace('\r',' ')
@@ -43,6 +51,7 @@ def go_mesostic():
         found = False
         foundNext = False
         outfile = root.infile+'.mesostic.txt'
+        outfile = ''.join(i for i in outfile if i in 'abcdefghijklmnopqrstuvwxyz.')
         output = open(outfile, 'w')
 
         for word in tokens:
@@ -75,6 +84,7 @@ def go_mesostic():
 
         print "wrote mesostic to "+outfile
     output.close()
+    root.infile = None
 
 # Tk window setup
 root = Tk()
@@ -85,7 +95,9 @@ tex = Text(root)
 tex.config(width=90, yscrollcommand=scroll.set, wrap=WORD)
 scroll.config(command=tex.yview)
 b = Button(root,text='Create Mesostic',command=go_mesostic)
-f_in = Button(root,text='Find Text',command=load_text)
+f_in = Button(root,text='Find Text File',command=load_text)
+url_label = Label(root,text='or enter URL:')
+url_input = Entry(root)
 spine_label = Label(root,text='Enter Spine:')
 spine_in = Entry(root)
 dummy_label = Label(root,text='------------')
@@ -96,6 +108,8 @@ tex.pack(fill=BOTH,side=RIGHT,expand=1)
 scroll.pack(fill=Y,side=RIGHT)
 title.pack(side=TOP,fill=X,pady=10)
 f_in.pack(side=TOP)
+url_label.pack(side=TOP)
+url_input.pack(side=TOP)
 spine_label.pack(side=TOP)
 spine_in.pack(side=TOP)
 b.pack(side=TOP,fill=X,expand=Y)
