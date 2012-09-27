@@ -31,7 +31,7 @@ def go_mesostic():
         s = s.replace('\n',' ')
         s = s.replace('\r',' ')
         s = s.replace('\t',' ')
-        cleaned_text = ''.join(i for i in s if i in 'abcdefghijklmnopqrstuvwxyz-\' ')
+        cleaned_text = ''.join(i for i in s if i.islower() or i in '-\' ')
 
 # silly little function to remove extra spaces
         for _ in range(10):
@@ -41,7 +41,7 @@ def go_mesostic():
 
         spine = spine_in.get()
         spine = spine.lower()
-        spine = ''.join(i for i in spine if i in 'abcdefghijklmnopqrstuvwxyz')
+        spine = ''.join(i for i in spine if i.islower())
         max_indent = 36
         max_phraselen = 6
 
@@ -51,8 +51,10 @@ def go_mesostic():
         found = False
         foundNext = False
         outfile = root.infile+'.mesostic.txt'
-        outfile = ''.join(i for i in outfile if i in 'abcdefghijklmnopqrstuvwxyz.')
+        outfile = outfile.lower()
+        outfile = ''.join(i for i in outfile if i.islower() or i=='.')
         output = open(outfile, 'w')
+        tex.insert(END,'\n')
 
         for word in tokens:
             wing = wing + word + ' '
@@ -82,6 +84,9 @@ def go_mesostic():
                         foundNext = True
                     found = True
 
+        for i in range(int(float(tex.index(END)))):
+            tex.tag_add(tex.index(END),i+max_indent/100.0)
+            tex.tag_config(tex.index(END),foreground='red')
         print "wrote mesostic to "+outfile
     output.close()
     root.infile = None
@@ -104,8 +109,8 @@ dummy_label = Label(root,text='------------')
 end = Button(root,text='Exit',command=exit)
 title = Label(root,text='Mesostic Generator',bg='red',fg='white')
 
-tex.pack(fill=BOTH,side=RIGHT,expand=1)
 scroll.pack(fill=Y,side=RIGHT)
+tex.pack(fill=BOTH,side=RIGHT,expand=1)
 title.pack(side=TOP,fill=X,pady=10)
 f_in.pack(side=TOP)
 url_label.pack(side=TOP)
