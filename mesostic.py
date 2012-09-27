@@ -76,22 +76,20 @@ def go_mesostic():
         print "wrote mesostic to "+outfile
     output.close()
 
-def go_exit():
-    exit()
-
+# Tk window setup
 root = Tk()
 root.title("Mesostic Generator")
 root.infile = None
 scroll = Scrollbar(root)
 tex = Text(root)
-tex.config(width=90, yscrollcommand=scroll.set)
+tex.config(width=90, yscrollcommand=scroll.set, wrap=WORD)
 scroll.config(command=tex.yview)
 b = Button(root,text='Create Mesostic',command=go_mesostic)
 f_in = Button(root,text='Find Text',command=load_text)
 spine_label = Label(root,text='Enter Spine:')
 spine_in = Entry(root)
 dummy_label = Label(root,text='------------')
-end = Button(root,text='Exit',command=go_exit)
+end = Button(root,text='Exit',command=exit)
 title = Label(root,text='Mesostic Generator',bg='red',fg='white')
 
 tex.pack(fill=BOTH,side=RIGHT,expand=1)
