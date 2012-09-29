@@ -5,7 +5,7 @@
 from re import split
 from Tkinter import *
 import tkFileDialog
-import nltk
+from nltk import clean_html
 from urllib import urlopen
 
 def load_text():
@@ -22,7 +22,7 @@ def go_mesostic():
         if root.infile == None:
             url = url_input.get()
             html = urlopen(url).read()
-            s = nltk.clean_html(html)
+            s = clean_html(html)
             root.infile = url_input.get()
         else:
             s = open(root.infile, 'r').read()
@@ -48,24 +48,32 @@ def go_mesostic():
         spine_index = 0
         winglen = 0
         wing = ''
+        nextline = ''
         found = False
         foundNext = False
-        outfile = root.infile+'.mesostic.txt'
+        outfile = root.infile
         outfile = outfile.lower()
-        outfile = ''.join(i for i in outfile if i.islower() or i=='.')
+        outfile = outfile.split('/')[-1]
+        if '.' in outfile:
+            outfile = outfile.split('.')[-2]
+        outfile = ''.join(i for i in outfile if i.islower())
+        outfile += '_mesostic.txt'
         output = open(outfile, 'w')
         tex.insert(END,'\n')
 
         for word in tokens:
-            if spine[spine_index] in word:
-                if found:
-                    foundNext = True
-                found = True
+            if found == True and spine[(spine_index+1) % len(spine)] in word:
+                foundNext = True
+            else:
+                wing = wing + word + ' '
+                winglen += 1
+                if spine[spine_index] in word:
+                    found = True
 
-            wing = wing + word + ' '
-            winglen += 1
+
 
             if winglen >= max_phraselen or foundNext:
+
                 if found == True:
                     spine_pos = wing.find(spine[spine_index])
                     indent = max_indent - spine_pos
@@ -75,20 +83,27 @@ def go_mesostic():
                         tex.insert(END,textline)
                         spine_index += 1
 
-                wing = ''
-                winglen = 0
-                found = False
+                if foundNext:
+                    wing = word + ' '
+                    winglen = 1
+                    found = True
+                else:
+                    wing = ''
+                    winglen = 0
+                    found = False
+
                 foundNext = False
+
                 if spine_index >= len(spine):
                     output.write('\n')
                     tex.insert(END,'\n')
                     spine_index = 0
 
-
-        for i in range(int(float(tex.index(END)))):
-            tex.tag_add(tex.index(END),i+max_indent/100.0)
-            tex.tag_config(tex.index(END),foreground='red')
-        print "wrote mesostic to "+outfile
+    # color spine word red
+    for i in range(int(float(tex.index(END)))):
+        tex.tag_add(tex.index(END),i+max_indent/100.0)
+        tex.tag_config(tex.index(END),foreground='red')
+    print "wrote mesostic to "+outfile
     output.close()
     root.infile = None
 
