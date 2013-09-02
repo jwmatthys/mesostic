@@ -104,7 +104,8 @@ def go_mesostic():
                     # check if testword is one of the actual spine words
                     for spinetest in spine_tokens:
                         if testword == spinetest:
-                            spineword_found = False
+                            spineword_found = True
+                            wing_fail = True
                     if currentletter in testword:
                         c = testword.find(currentletter)
                         if previousletter in testword and not (previousletter == currentletter):
